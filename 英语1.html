@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选择题练习</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: row;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .question {
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .navigation {
+            margin-top: 10px;
+        }
+        .navigation button {
+            margin-right: 10px;
+        }
+        .nav-bar {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 2px solid #ccc;
+        }
+        .nav-bar table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .nav-bar td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 5px;
+        }
+        .nav-bar a {
+            text-decoration: none;
+            color: blue;
+            cursor: pointer;
+        }
+        .nav-bar a.active {
+            font-weight: bold;
+        }
+        .nav-bar a.wrong {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1>选择题练习</h1>
+        <div id="quiz"></div>
+        <div id="result"></div>
+    </div>
+    <div class="nav-bar" id="navBar">
+        <table id="navTable"></table>
+    </div>
+
+    <script>
+        const questions = [
+          {
+    question: "1. If in the future we are going to spend more time interacting with machines, we need them to do more than understand the words we are saying: We need them to **get** us.",
+    options: ["A. become", "B. communicate with", "C. understand the point of", "D. move"],
+    answer: "C"
+},
+{
+    question: "2. We need them, in other words, to 'understand and share human emotion--to possess **empathy**'",
+    options: ["A. sharing sorrow of others", "B. sympathy for another's suffering", "C. giving relief in times of disappointment", "D. ability to share another person's feelings and emotions as if they were your own"],
+    answer: "D"
+},
+{
+    question: "3. Some robots that **mimic** emotion are already on the market.",
+    options: ["A. imitate in order to deter predator or for camouflage", "B. replicate the physiological effects of", "C. pretend to be", "D. imitate in order to entertain or ridicule"],
+    answer: "D"
+},
+{
+    question: "4. I became interested in building empathetic robots six years ago, when my research group designed the first Chinese **equivalent** of Siri.",
+    options: ["A. an exact duplicate", "B. a thing that has the same function in a different place or system", "C. having great or severe effect of something", "D. equal in amount or value"],
+    answer: "B"
+},
+{
+    question: "5. We started by teaching machines to recognize negative stress (**distress**) in speech samples from students at my institution.",
+    options: ["A. extreme anxiety, sorrow or pain", "B. the state of being in extreme danger and needing urgent help", "C. suffering caused by lack of the basic necessities of life", "D. seizure and holding of property as security for payment of a debt"],
+    answer: "A"
+},
+{
+    question: "6. Building an empathy module is a matter of identifying those characteristics of human communication that machines can use to recognize emotion and then training algorithms to **spot** them.",
+    options: ["A. recognize the identity, nationality, etc. of", "B. catch sight of", "C. stain a person's character", "D. locate an enemy's position from the air"],
+    answer: "A"
+},
+{
+    question: "7. Our brain **detects** emotion in a person's voice by paying attention to acoustic cues that signal stress, joy, fear, anger, disgust, and so on.",
+    options: ["A. reveal the guilt of", "B. discover or perceive the existence or presence of", "C. use an instrument to observe", "D. discover a crime"],
+    answer: "B"
+},
+{
+    question: "8. Using signal-processing techniques, computers can detect these cues, just as a polygraph **picks up** blood pressure, pulse and skin conductivity.",
+    options: ["A. learn or acquire by chance or without effort", "B. become aware of or sensitive to something", "C. detect or receive a signal by means of electronic apparatus", "D. collect something that has been left somewhere"],
+    answer: "C"
+},
+{
+    question: "9. It will also need to understand the underlying meaning of speech and compare the content with the emotion with which it was **delivered**.",
+    options: ["A. bring to a destination", "B. give birth to", "C. utter or recite an opinion, a speech, etc.", "D. hand over"],
+    answer: "C"
+},
+{
+    question: "10. These machine-learning algorithms look for **telltale** cues in the content.",
+    options: ["A. revealing or disclosing unintentionally", "B. revealing information about another's private affairs", "C. mischief-making", "D. story-telling"],
+    answer: "A"
+},
+{
+    question: "11. Their appearance means it is testing time, and tests are big, important, **excruciatingly** unpleasant events.",
+    options: ["A. grievously", "B. in a very painful manner", "C. extremely", "D. mentally agonizing"],
+    answer: "C"
+},
+{
+    question: "12. The banter in Bain's classroom is a world away from the tense **standoffs** at public schools around the country.",
+    options: ["A. moving or keeping away", "B. indifference", "C. contests in which the score is tied and the winner is undecided", "D. stalemate between two equally matched opponents in a dispute"],
+    answer: "D"
+},
+{
+    question: "13. These brain regions are associated with the so-called **consolidation**, or stabilization, of memories and with the generation of cues that make memories readily accessible later on.",
+    options: ["A. making physically stronger", "B. combining a number of things into a single more effective whole", "C. combining into a single overall account", "D. combining into a solid mass"],
+    answer: "B"
+},
+{
+    question: "14. Not only does retrieval practice help students remember the specific information they retrieved, it also improves **retention** for related information that was not directly tested.",
+    options: ["A. the continued possession, use, or control of something", "B. the fact of keeping something in one's memory", "C. the action of absorbing and continuing to hold a substance", "D. failure to eliminate a substance from the body"],
+    answer: "B"
+},
+{
+    question: "15. The questions they ask are overwhelmingly of a **superficial** nature which leads, almost inevitably, to superficial learning.",
+    options: ["A. appearing to be real or true only until examined more closely", "B. not thorough, deep, or complete", "C. situated or occurring on the skin", "D. not showing any depth of character"],
+    answer: "B"
+},
+{
+    question: "16. To **cite** one example: In a study published in 2008, the authors reported that students who quizzed themselves on vocabulary terms remembered 80 percent of the words later on, whereas students who studied the words by repeatedly reading them over remembered only about a third of the words.",
+    options: ["A. summoned someone to appear in a law court", "B. praised someone for a courageous act in an official dispatch", "C. quoted as evidence for or justification of an argument or statement", "D. stated it as the official reason for a legal case"],
+    answer: "C"
+},
+{
+    question: "17. In a study published in 2008, the authors reported that students who **quizzed** themselves on vocabulary terms remembered 80 percent of the words later on, whereas students who studied the words by repeatedly reading them over remembered only about a third of the words.",
+    options: ["A. asked someone questions", "B. gave a student or class an informal written test", "C. made fun of", "D. looked curiously at someone through or as if through an eyeglass"],
+    answer: "B"
+},
+{
+    question: "18. Lovett has been promoting the use of exam wrappers to the Carnegie Mellon faculty for several years now, and a number of professors, especially in the sciences, have **incorporated** the technique into their courses.",
+    options: ["A. mixed together different elements", "B. constituted a company or other organization as a legal corporation", "C. combined ingredients into one substance", "D. taken in something as part of a whole"],
+    answer: "D"
+},
+{
+    question: "19. Holding out the hopeful possibility that retrieval practice could actually begin to close achievement gaps between the advantaged and the **underprivileged**.",
+    options: ["A. not enjoying the same standard of living or rights as the majority of people in a society", "B. having special rights, advantages, or immunities", "C. legally protected from being made public", "D. not having special rights, advantages, or immunities"],
+    answer: "A"
+},
+{
+    question: "20. A new generation of tests are being developed in the U.S. to assess how well students have met the Common Core State Standards, the set of academic benchmarks in **literacy** and math that have been adopted by 43 states.",
+    options: ["A. written works with superior or lasting artistic merit", "B. competence or knowledge in a specified area", "C. the ability to read and write", "D. language and literature"],
+    answer: "C"
+},
+{
+    question: "21. Rocks that old would tell us how the planet's surface formed out of its violent infancy and just how soon after that life emerged—a pivotal **chapter** in Earth's biography that has so far remained beyond reach.",
+    options: ["A. a main division of a book", "B. a section of a treaty", "C. a distinctive period in history", "D. a series or sequence"],
+    answer: "C"
+},
+{
+    question: "22. Rocks that old would tell us how the planet's surface formed out of its violent infancy and just how soon after that life emerged—a pivotal chapter in Earth's **biography** that has so far remained beyond reach.",
+    options: ["A. an account of someone's life written by someone else", "B. the course of a person's life", "C. the writing as a branch of literature", "D. an account in biographical form of an organization, society, animal, etc."],
+    answer: "D"
+},
+{
+    question: "23. They find themselves in much the same situation as biographers of ancient Greek philosophers, trying to **squeeze** as much meaning as they can from scraps of parchment and secondhand stories.",
+    options: ["A. firmly press with one's fingers", "B. obtain something with difficulty", "C. have a damage effect on something", "D. extract liquid from something by compressing it firmly"],
+    answer: "B"
+},
+{
+    question: "24. The chemical **bonds** that make up zircons can trap radioactive atoms such as uranium.",
+    options: ["A. ropes or chains used to hold someone prisoner", "B. agreements or promises with legal force", "C. strong forces of attraction holding atoms together in a molecule or crystal", "D. things used to tie something or to link things together"],
+    answer: "C"
+},
+{
+    question: "25. The chemical bonds that make up zircons can **trap** radioactive atoms such as uranium.",
+    options: ["A. hold fast and prevent from moving", "B. catch from a trap", "C. catch a criminal", "D. trick someone so that they do or say something that they do not want to"],
+    answer: "A"
+},
+{
+    question: "26. The age of its zircons thus has no **bearing** on the age of the surrounding rock.",
+    options: ["A. relation or relevance", "B. a person's way of standing or moving", "C. the ability to tolerate something bad", "D. the direction or position of something relative to a fixed point"],
+    answer: "A"
+},
+{
+    question: "27. Heaman, himself an expert on old rocks, thinks that O'Neil and his colleagues have made a good case. 'I think their evidence is **compelling**,' he says.",
+    options: ["A. evoking interest, attention, or admiration in a powerfully irresistible way", "B. inspiring conviction, not able to be refuted", "C. overwhelming, not able to be resisted", "D. driving or forcing"],
+    answer: "B"
+},
+{
+    question: "28. There is an even more exciting prospect if the Nuvvuagittuq rocks formed on the ocean floor 4.4 billion years ago: They could **shed light on** the origin of life.",
+    options: ["A. understand something after prolonged thought or doubt", "B. take into consideration", "C. make widely known or evident", "D. help to explain by providing further information about it"],
+    answer: "D"
+},
+{
+    question: "29. If the Nuvvuagittuq rocks formed on the ocean floor 4.4 billion years ago, they are the perfect material to study to **tackle** these big questions.",
+    options: ["A. initiate discussion with someone about a disputed or sensitive issue", "B. make determined efforts to deal with a problem or difficult task", "C. try to take the ball from an opponent by intercepting them", "D. attack someone and fight them"],
+    answer: "B"
+},
+{
+    question: "30. As they **spar**, they are developing better methods for dating old rocks in general.",
+    options: ["A. engage in argument, typically of a kind that is prolonged or repeated but not violent", "B. fight with the feet or spurs in a game-cock", "C. make the motions of boxing without landing heavy blows as a form of training", "D. shut close"],
+    answer: "A"
+},
+{
+    question: "31. After the 2011 fact-finding mission, he returned to Clarendon Laboratory, where all three of us worked, and made a series of **tweaks** to the recipe.",
+    options: ["A. sharp twists or pulls", "B. fine adjustments", "C. anxieties", "D. big changes"],
+    answer: "B"
+},
+{
+    question: "32. Researchers can also layer different perovskites with different bandgaps on top of one another. Double-decker perovskites should be able to break through the **nominal** 33 percent ceiling.",
+    options: ["A. of little importance or value", "B. named or bearing the name of a specific person", "C. very small or far below the real value or cost", "D. existing, etc. in name or word only, not in fact"],
+    answer: "D"
+},
+{
+    question: "33. The crystals **graced** a 1988 cover of this magazine when scientists thought they could form high-temperature superconductors.",
+    options: ["A. behaved gracefully", "B. did honor to someone by one's presence", "C. was an attractive presence in or on", "D. hoped to become"],
+    answer: "C"
+},
+{
+    question: "34. Yet perovskite companies can learn from First Solar's success in sealing and **rigorously** testing products.",
+    options: ["A. in an extremely thorough or accurate manner", "B. physically demanding", "C. adhering strictly to a way of doing something", "D. demanding strict attention to rules"],
+    answer: "A"
+},
+{
+    question: "35. But there is a **ceiling** to how much of the sunlight's energy a solar cell made of semiconductors such as silicon and perovskites can convert into electrical power.",
+    options: ["A. the overhead upper surface of a room", "B. maximum altitude at which a plane can fly", "C. altitude of the lowest layer of clouds", "D. an upper limit on what is allowed"],
+    answer: "D"
+},
+{
+    question: "36. For comparison, after decades of development state-of-the-art silicon solar cells have **plateaued** at about 25 percent.",
+    options: ["A. reached a state of little or no change after a time of activity or progress", "B. overstepped the boundary after a time of activity or progress", "C. broken the records after a time of activity or progress", "D. increased rapidly after a time of activity or progress"],
+    answer: "A"
+},
+{
+    question: "37. Perovskites could literally **piggyback off** silicon's success, gaining entry to a $50-billion market.",
+    options: ["A. release something from one's back", "B. use existing work or an existing product as support", "C. avoid completely", "D. imitate"],
+    answer: "B"
+},
+{
+    question: "38. Finally, to succeed commercially, perovskite innovators need to provide a **compelling economic narrative** to attract the investment dollars required for scaling up production.",
+    options: ["A. a spoken or written account on how to make money", "B. a survey on how to make money", "C. a project design on how to make money", "D. a professional lecture on how to make money"],
+    answer: "A"
+},
+{
+    question: "39. They also have to greatly improve the safety and long-term stability of the cells—an **uphill battle**.",
+    options: ["A. a battle in the hill", "B. a battle on the slope of the hill", "C. a battle which lasts for a long time", "D. difficult battle"],
+    answer: "D"
+},
+{
+    question: "40. Critics have claimed that the efficiency numbers for perovskite cells might be **inflated** because of hysteresis, which could create the appearance of greater current.",
+    options: ["A. exaggerated", "B. mistaken", "C. misled", "D. misunderstood"],
+    answer: "A"
+},
+{
+    question: "41. The episode led to the creation of the Entertainment Software Rating Board, which today **rates** games based on their age appropriateness.",
+    options: ["A. assigns or values", "B. ranks", "C. is worth of", "D. has a high opinion of"],
+    answer: "B"
+},
+{
+    question: "42. Forty-six percent of college students fail to graduate with any **credential** within six years.",
+    options: ["A. qualification", "B. achievement", "C. certificate", "D. quality"],
+    answer: "C"
+},
+{
+    question: "43. Once it was discovered that the high school shooters in the Columbine massacre of 1999 were **avid** fans of this genre, video games were again vilified.",
+    options: ["A. keen", "B. anxious", "C. greedy", "D. hungry"],
+    answer: "A"
+},
+{
+    question: "44. Clearly, for many kids, traditional education is neither relevant nor **engaging**.",
+    options: ["A. charming", "B. busy", "C. agreeing to marry", "D. involving"],
+    answer: "A"
+},
+{
+    question: "45. This research is emerging at a time of great **disruption** in education.",
+    options: ["A. interruption", "B. disturbance", "C. innovation", "D. disorderly outburst"],
+    answer: "C"
+},
+{
+    question: "46. Kids are unlikely to embrace Call of Duty: Calculus in their **discretionary** playtime.",
+    options: ["A. available for use at the freedom of the user", "B. (especially of funds) not earmarked", "C. careful", "D. cautious"],
+    answer: "A"
+},
+{
+    question: "47. Entangled blocks are **inextricably** linked, even if they are a vast distance apart.",
+    options: ["A. confusedly", "B. impossible to escape from", "C. unsolvable", "D. complicatedly"],
+    answer: "D"
+},
+{
+    question: "48. Scientists are discovering a powerful **alignment** between good game design and effective learning.",
+    options: ["A. arrangement in a straight line", "B. a position of agreement or alliance", "C. the route of a railway or road", "D. apparent meeting of two or more celestial bodies in the same degree of the zodiac"],
+    answer: "B"
+},
+{
+    question: "49. Realizing the full educational potential of games will involve **addressing** the good and the bad.",
+    options: ["A. speaking to", "B. saying or writing remarks or a protest to", "C. writing the name and address", "D. thinking about and beginning to deal with"],
+    answer: "D"
+},
+{
+    question: "50. They also highlight multiple studies showing that while playing violent games may increase short-term **aggressive** behavior, there is no correlation to the type of violent behavior exhibited by, for example, school shooters.",
+    options: ["A. ready to attack", "B. fast-growing", "C. pursuing one's aims and interests forcefully", "D. having pioneering spirit"],
+    answer: "A"
+},
+    {
+        "question": "51. Any intelligent machine is, at its core, a software system consisting of **modules**:",
+        "options": ["A. units or periods of training or education;", "B. independent self-contained units of a spacecraft;", "C. parts of an electronic system which perform a particular function."],
+        "answer": "C"
+    },
+    {
+        "question": "52. When we are cheerful, we talk faster, and the **pitch** of our voice rises:",
+        "options": ["A. the degree of highness or lowness of a tone;", "B. height, degree, or intensity;", "C. the steepness of a slope, especially of a roof."],
+        "answer": "A"
+    },
+    {
+        "question": "53. A brief recording of human speech might contain only a few words, but we can **extract** vast amounts of signal-processing data from the tone of voice:",
+        "options": ["A. obtain a natural resource from the earth;", "B. obtain information from a larger amount or source of information;", "C. obtain juice by suction, pressure, distillation, etc."],
+        "answer": "B"
+    },
+    {
+        "question": "54. We built the first-ever multilingual **corpus** of natural stress emotion in English, Mandarin and Cantonese by asking students 12 increasingly stressful questions:",
+        "options": ["A. a distinctive structure of some kind in a human or animal body;", "B. a large collection of written or spoken texts that is used for language research;", "C. a collection of writings, texts, spoken materials, etc."],
+        "answer": "B"
+    },
+    {
+        "question": "55. We electronically extracted some 1,000 fundamental signal **attributes** from each song acoustic parameters such as **energy**:",
+        "options": ["A. force, vigor, capacity for activity;", "B. the capacity of a physical system to do work;", "C. means of doing work as provided by the utilization of physical or chemical resources."],
+        "answer": "C"
+    },
+    {
+        "question": "56. To understand humor, sarcasm, irony and other high-level communication **attributes**, a machine will need to do more than recognize emotion from acoustic features:",
+        "options": ["A. qualities or features that someone or something has;", "B. material objects recognized as appropriate to a person, office, or status."],
+        "answer": "A"
+    },
+    {
+        "question": "57. Think of the chain of cognitive, neurological and muscular **events** that occurs when one person speaks to another:",
+        "options": ["A. a thing that happens or takes place, especially one of importance;", "B. an item in a sports program;", "C. a single occurrence of a process."],
+        "answer": "C"
+    },
+    {
+        "question": "58. One person **formulates** her thoughts, chooses her words and speaks, and then the listener decodes the message:",
+        "options": ["A. prepares according to a formula;", "B. expresses a thought, opinion, or idea by using particular words;", "C. invents a plan or proposal and thinks about the details carefully."],
+        "answer": "B"
+    },
+    {
+        "question": "59.Sorry, I didn't hear you.' This may be the first empathetic **utterance** by a commercial machine:",
+        "options": ["A. a spoken word, statement, or vocal sound;", "B. action of saying or expressing something aloud;", "C. an uninterrupted chain of spoken or written language."],
+        "answer": "A"
+    },
+    {
+        "question": "60. This is a way for us to gather **feedback** from people on their interactions with early empathetic robots:",
+        "options": ["A. information about the result of an experiment etc.;", "B. the process in which part of the output of a system is returned to its input in order to regulate its further output."],
+        "answer": "A"
+    },
+    {
+        "question": "61. The **epicenter** of the 'opt-out' movement may be New York State:",
+        "options": ["A. the point on the earth's surface vertically above the focus of an earthquake;", "B. the central point of something, typically a difficult or unpleasant situation."],
+        "answer": "B"
+    },
+    {
+        "question": "62. Critics of U.S. schools heavy emphasis on testing **charge** that the high-stakes assessments inflict anxiety on students and teachers:",
+        "options": ["A. store electrical energy in a battery or battery-operated device;", "B. formally accuse someone of something or make an assertion that;", "C. rush forward in attack."],
+        "answer": "B"
+    },
+    {
+        "question": "63. But a testing **regime** that actively supports learning would look very different from the way American schools 'do testing' today:",
+        "options": ["A. a system or planned way of doing things, especially one imposed from above;", "B. an authoritarian government;", "C. a set of rules about food, exercise, or beauty that some people follow in order to stay healthy or attractive."],
+        "answer": "A"
+    },
+    {
+        "question": "64. Its mental **representation** becomes stronger, more stable and more accessible:",
+        "options": ["A. the action of speaking or acting on behalf of someone;", "B. description of someone or something in a particular way;", "C. a mental concept regarded as corresponding to a thing perceived."],
+        "answer": "C"
+    },
+    {
+        "question": "65. The authors used level DOK4 as their **benchmark** for questions that measure deeper learning, and by this standard the tests are failing utterly:",
+        "options": ["A. a surveyor's mark cut in a wall and used as a reference point in measuring altitudes;", "B. a standard against which things may be compared or assessed;", "C. a problem designed to evaluate the performance of a computer system."],
+        "answer": "B"
+    },
+    {
+        "question": "66. **Transfer** is the ultimate goal of deep learning:",
+        "options": ["A. moving from one place to another;", "B. application of a skill learned in one situation to a different but similar situation;", "C. change to another place, route, or means of transport during a journey."],
+        "answer": "B"
+    },
+    {
+        "question": "67. Students earned an average grade of C on material that had been **reviewed** and A on material that had been quizzed:",
+        "options": ["A. read things again and make notes in order to be prepared for the exam;", "B. write a critical appraisal of a book, play, film, etc. for publication in a newspaper or magazine;", "C. submit a case or sentence for reconsideration by a higher court or authority."],
+        "answer": "A"
+    },
+    {
+        "question": "68. A few years ago Lovett came up with a way to get students to engage in **reflection**:",
+        "options": ["A. a thing that is a consequence of or arises from something else;", "B. serious thought or consideration about a particular subject."],
+        "answer": "B"
+    },
+    {
+        "question": "69. For example, will you change your study habits or try to **sharpen** specific skills:",
+        "options": ["A. become better at noticing, thinking, or doing something;", "B. raise the pitch of;", "C. make one's senses more acute."],
+        "answer": "A"
+    },
+    {
+        "question": "70. According to Darling-Hammond, the **provisions** of No Child Left Behind effectively forced states to employ inexpensive, multiple-choice tests that could be scored by machine:",
+        "options": ["A. actions of providing or supplying something for use;", "B. conditions or requirements in a legal document;", "C. cognitive processes of thinking about what you will do in the event of something happening."],
+        "answer": "B"
+    },
+    {
+        "question": "71. The exposed rocks are beautiful in their stretched and folded complexity. Some are gray and black, shot through with light **veins**.",
+        "options": ["A. blood vessels", "B. streaks or stripes of a different color in wood, marble, etc.", "C. distinctive qualities, styles, or tendencies"],
+        "answer": "B"
+    },
+    {
+        "question": "72. In other cases, molten magma rose from Earth's mantle, cooling and **crystallizing** into igneous rock as it ascended.",
+        "options": ["A. forming or causing to form crystals", "B. making definite and clear"],
+        "answer": "A"
+    },
+    {
+        "question": "73. Some rocks were slowly eroded by rain and wind and delivered back to the ocean for new **sedimentation**.",
+        "options": ["A. matter that settles to the bottom of a liquid", "B. particulate matter that is carried by water or wind and deposited on the surface of the seabed and may in time become consolidated into rock"],
+        "answer": "B"
+    },
+    {
+        "question": "74. The **decay** of those atoms acts like a clock that geologists can use to measure the age of the zircons.",
+        "options": ["A. organic matter rots or decomposes through the action of bacteria and fungi", "B. radioactive substance or particle undergoes change to a different form by emitting radiation", "C. decline in quality, power, or vigor"],
+        "answer": "B"
+    },
+    {
+        "question": "75. Their structure suggests that the rock in which they originally formed **solidified** about four miles below the surface.",
+        "options": ["A. changed from a liquid or fluid into a solid and became hard", "B. made stronger, reinforced"],
+        "answer": "A"
+    },
+    {
+        "question": "76. In the late 1990s the Quebec government launched a massive geologic expedition to make the first detailed maps of the northern **reaches** of the province.",
+        "options": ["A. the distance to which someone can stretch out their hand", "B. the extent or range of application, effect, or influence", "C. a continuous extent of land or water, especially a stretch of river between two bends, or the part of a canal between locks"],
+        "answer": "C"
+    },
+    {
+        "question": "77. The only clear way to determine if a specific stone from Nuvvuagittuq is ancient or not is to **date** it.",
+        "options": ["A. go out with someone in whom one is romantically interested", "B. establish or ascertain the date of an object or event", "C. originate at a particular time or have existed since"],
+        "answer": "B"
+    },
+    {
+        "question": "78. Radioactive isotopes are **variations** of atoms that were part of the dusty cloud from which our solar system was born.",
+        "options": ["A. something a little different from others of the same type", "B. an instance of change", "C. the angle between magnetic north, and true north"],
+        "answer": "A"
+    },
+    {
+        "question": "79. In a Carnegie Institution lab, O'Neil and Carlson tallied up the **concentrations** of different isotopes.",
+        "options": ["A. close gatherings of people or things", "B. the relative amounts of a particular substance contained within a solution or mixture or in a particular volume of space", "C. the actions of strengthening solution by the removal of water or other diluting agent"],
+        "answer": "B"
+    },
+    {
+        "question": "80. Among the isotopes was one known as neodymium 142. It forms from the **breakdown** of samarium 146.",
+        "options": ["A. the chemical or physical decomposition of something", "B. a failure of a relationship", "C. an explanatory analysis, especially of statistics"],
+        "answer": "A"
+    },
+    {
+        "question": "81. Researchers can combine them easily and inexpensively, into thin **films** that have a highly crystalline structure similar to that achieved in silicon wafers after costly, high-temperature processing.",
+        "options": ["A. thin coating or covering", "B. roll or sheet of thin flexible material for use in photographs"],
+        "answer": "A"
+    },
+    {
+        "question": "82. Rolls of perovskite film that are thin and flexible, instead of thick and **rigid** like silicon wafers, could one day be rapidly spooled from a special printer to make lightweight, bendable, and even colorful solar sheets and coatings.",
+        "options": ["A. unable to bend or be forced out of shape", "B. not able to be changed or adapted"],
+        "answer": "A"
+    },
+    {
+        "question": "83. The lower the bandgap, the more of the sun's spectrum a cell can absorb to **excite** electrons, but the lower the energy each electron will have.",
+        "options": ["A. cause strong feelings of enthusiasm and eagerness in", "B. produce a magnetic field in", "C. produce a state of increased energy or activity in"],
+        "answer": "C"
+    },
+    {
+        "question": "84. Because the electrical power of a cell is the **product** of the flow of electrons exiting that cell and the energy that those electrons carry, the efficiency of perovskites can rival silicon.",
+        "options": ["A. something produced by nature or by man", "B. substance obtained by chemical reaction", "C. quantity obtained by multiplication"],
+        "answer": "C"
+    },
+    {
+        "question": "85. Perovskites can degrade rapidly because they are sensitive to moisture, so they must be encased in a watertight **seal**.",
+        "options": ["A. a stamp affixed to a document", "B. a finishing coat applied to exclude moisture", "C. pelt or fur"],
+        "answer": "B"
+    },
+    {
+        "question": "86. Creating a defect-free crystalline film requires tricky **deposition** methods.",
+        "options": ["A. the act of putting something somewhere", "B. the natural process of laying down a substance on rocks or soil", "C. the act of removing a powerful person from a position or office"],
+        "answer": "B"
+    },
+    {
+        "question": "87. In most cases, this process renders efficiency **readings** that are similar to quick, initial measurements, but researchers may be tempted to report the higher of the readings.",
+        "options": ["A. written material intended to be read", "B. a datum about some physical state that is presented to a user by a meter or similar instrument"],
+        "answer": "B"
+    },
+    {
+        "question": "88. Manufactured by First Solar, cadmium telluride panels have been deployed around the world and have exceeded safety standards despite the presence of an element far more toxic than **lead**.",
+        "options": ["A. first place or position", "B. conductor conveying current from the place where it is used", "C. a soft heavy toxic malleable metallic element"],
+        "answer": "C"
+    },
+    {
+        "question": "89. Finding an effective moisture **barrier** that works for that long, is crucial.",
+        "options": ["A. any condition that makes it difficult to make progress or to achieve an objective", "B. anything serving to maintain separation by obstructing vision or access"],
+        "answer": "B"
+    },
+    {
+        "question": "90. First Solar has convinced communities that its panels are so well sealed that no cadmium could **escape**, even in a desert wildfire at 1,000 degrees C.",
+        "options": ["A. break free from confinement or control", "B. leak from a container"],
+        "answer": "B"
+    },
+    {
+        "question": "91. Congress held **hearings** about the game and its influence on youth.",
+        "options": ["A. the faculties of perceiving sounds", "B. opportunities to state one's case", "C. acts of listening to evidence in a court of law or before an official"],
+        "answer": "C"
+    },
+    {
+        "question": "92. By the mid-1990s the public associated video games with first-person-shooter games, in which players careened through 3D environments, **mowing** down enemies with extravagant weapons.",
+        "options": ["A. cutting down an area of grass with a machine", "B. killing someone with a fusillade of bullets or other missiles"],
+        "answer": "B"
+    },
+    {
+        "question": "93. Although these games had many enthusiastic fans, they were low **profile** compared with the big action games.",
+        "options": ["A. an outline of something, especially a person's face, as seen from one side", "B. an outline of part of the earth's surface", "C. the extent to which a person or organization that attracts public notice or comment"],
+        "answer": "C"
+    },
+    {
+        "question": "94. Daphne Bavelier has shown that violent action games can, over time, increase a player's brain **plasticity**, and learning capacity.",
+        "options": ["A. the quality of being easily shaped or moulded", "B. the adaptability of an organism to changes in its environment or differences between its various habitats"],
+        "answer": "A"
+    },
+    {
+        "question": "95. Most significant, they give players **agency**.",
+        "options": ["A. a business that provides a service on behalf of other businesses", "B. government organization responsible for a certain area of administration", "C. action or intervention, especially such as to produce a particular effect"],
+        "answer": "C"
+    },
+    {
+        "question": "96. There are a couple of ways this can happen - with \"**bounded**\" games that one plays and finishes and by using the principles of game design to restructure learning.",
+        "options": ["A. walked or ran with leaping strides", "B. formed the boundary of or enclosed"],
+        "answer": "B"
+    },
+    {
+        "question": "97. At E-Line, we are now working on a digital version of Historia, which we will **pilot** this spring and release this fall.",
+        "options": ["A. act as a pilot of an aircraft or ship", "B. guide or steer", "C. test a scheme, project etc. before introducing it more widely"],
+        "answer": "C"
+    },
+    {
+        "question": "98. The first consumer game we will **release** is the action-adventure game Never Alone.",
+        "options": ["A. set free", "B. allow something concentrated in a small area to spread and work freely", "C. make available for general viewing or purchase"],
+        "answer": "C"
+    },
+    {
+        "question": "99. To do so, the player must find the resources (**mine**) and make tools.",
+        "options": ["A. dig in the earth for coal or other minerals", "B. delve into an abundant source to extract something of value, especially information or skill", "C. lay explosives just below the surface of ground"],
+        "answer": "B"
+    },
+    {
+        "question": "100. They can tell whether their child is learning to **code** in Minecraft or playing a 50th Hunger Games death match.",
+        "options": ["A. convert a message into a particular system of symbols for the purposes of secrecy", "B. write program instructions", "C. be the genetic determiner of a characteristic"],
+        "answer": "B"
+    }
+
+        ];
+
+        const shuffledQuestions = questions.sort(() => 0.5 - Math.random());
+
+        const quizContainer = document.getElementById('quiz');
+        const navTable = document.getElementById('navTable');
+        let score = 0;
+
+        shuffledQuestions.forEach((questionObj, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            if (index === 0) questionDiv.classList.add('active');
+            questionDiv.id = `q${index + 1}`;
+            const questionTitle = document.createElement('h3');
+            questionTitle.innerText = questionObj.question;
+            questionDiv.appendChild(questionTitle);
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+            questionObj.options.forEach(option => {
+                const label = document.createElement('label');
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `q${index + 1}`;
+                input.value = option.charAt(0);
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(option));
+                optionsDiv.appendChild(label);
+            });
+            questionDiv.appendChild(optionsDiv);
+
+            const navigationDiv = document.createElement('div');
+            navigationDiv.classList.add('navigation');
+            if (index > 0) {
+                const prevButton = document.createElement('button');
+                prevButton.innerText = '上一题';
+                prevButton.onclick = () => showPreviousQuestion(`q${index + 1}`);
+                navigationDiv.appendChild(prevButton);
+            }
+            if (index < shuffledQuestions.length - 1) {
+                const nextButton = document.createElement('button');
+                nextButton.innerText = '下一题';
+                nextButton.onclick = () => showNextQuestion(`q${index + 1}`);
+                navigationDiv.appendChild(nextButton);
+            }
+            questionDiv.appendChild(navigationDiv);
+
+            quizContainer.appendChild(questionDiv);
+
+            const rowIndex = Math.floor(index / 10);
+            const colIndex = index % 10;
+
+            if (!navTable.rows[rowIndex]) {
+                navTable.insertRow(rowIndex);
+            }
+            const cell = navTable.rows[rowIndex].insertCell(colIndex);
+
+            const navLink = document.createElement('a');
+            navLink.id = `nav${index + 1}`;
+            navLink.innerText = index + 1;
+            navLink.onclick = () => showQuestion(`q${index + 1}`);
+            cell.appendChild(navLink);
+        });
+
+        const answers = shuffledQuestions.reduce((acc, curr, index) => {
+            acc[`q${index + 1}`] = curr.answer;
+            return acc;
+        }, {});
+
+        function showNextQuestion(currentId) {
+            const currentQuestion = document.getElementById(currentId);
+            const nextQuestion = currentQuestion.nextElementSibling;
+            if (nextQuestion && nextQuestion.classList.contains('question')) {
+                currentQuestion.classList.remove('active');
+                nextQuestion.classList.add('active');
+                updateNavBar(currentId, nextQuestion.id);
+            } else {
+                document.getElementById('result').innerHTML = `你已完成所有题目！`;
+            }
+        }
+
+        function showPreviousQuestion(currentId) {
+            const currentQuestion = document.getElementById(currentId);
+            const prevQuestion = currentQuestion.previousElementSibling;
+            if (prevQuestion && prevQuestion.classList.contains('question')) {
+                currentQuestion.classList.remove('active');
+                prevQuestion.classList.add('active');
+                updateNavBar(currentId, prevQuestion.id);
+            }
+        }
+
+        function showQuestion(questionId) {
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+            document.getElementById(questionId).classList.add('active');
+            updateNavBar(null, questionId);
+        }
+
+        function updateNavBar(oldId, newId) {
+            if (oldId) {
+                const oldIndex = parseInt(oldId.replace('q', '')) - 1;
+                document.getElementById(`nav${oldIndex + 1}`).classList.remove('active');
+            }
+            const newIndex = parseInt(newId.replace('q', '')) - 1;
+            document.getElementById(`nav${newIndex + 1}`).classList.add('active');
+        }
+
+        document.querySelectorAll('.options input').forEach(input => {
+            input.addEventListener('click', function() {
+                const questionId = this.name;
+                const selectedValue = this.value;
+                if (selectedValue === answers[questionId]) {
+                    score++;
+                    showNextQuestion(questionId);
+                } else {
+                    alert("错误，请选择正确答案。");
+                    const navIndex = parseInt(questionId.replace('q', '')) - 1;
+                    document.getElementById(`nav${navIndex + 1}`).classList.add('wrong');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
